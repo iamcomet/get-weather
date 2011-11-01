@@ -1,0 +1,87 @@
+#! /bin/bash
+#
+# Get weather.raychou.com's rss result
+#
+# usage: ./getweather [CITYID] [DAYS]
+#
+# updated by comet on 2011-07-28
+
+SHPATH="/root/shells"
+TASKLOG="${SHPATH}/task.log"
+ALERTLOG="${SHPATH}/alert.log"
+SHTIME=`date +%F\ \ %T`
+
+#curl --connect-timeout 5 -s -S
+#s: slient , S: Show error
+CURL=`which curl`
+USERAGENT='Mozilla/5.0 (X11; U; Linux x86_64; zh-CN; rv:1.9.2.6) Gecko/20110728 Ubuntu/10.04 (lucid) Firefox/5.0'
+DAYS=3
+
+#-n: length not null
+if [ -n "$1" ]; then
+	case "$1" in
+		gz)
+			CITYID=59287;;
+		nh)
+			CITYID=59288;;
+		zj)
+			CITYID=59658;;
+		lz)
+			CITYID=59750;;
+		*)
+			CITYID="$1";;
+	esac
+else
+	CITYID=59287
+fi
+
+# DAYS max is 7, default is 3 .
+if [ -n "$2" ]; then
+	# $2 is integer or not
+	ISDAY=`echo "$2"|sed 's/[0-9]//g'|wc -c`
+	if  [ "${ISDAY}" -eq 1 ] && [ "$2" -ge 1 ] && [ "$2" -le 7 ]; then
+		DAYS=$2
+	fi
+fi
+
+CITYURL="http://weather.raychou.com/?/detail/${CITYID}/rss"
+
+# sed  must be with curl result in one line, otherwise will not work.
+# delete html tag, TAB(ctrl+v+tab), alpha AND numeric, numeric-date, FREE AD,\r\n
+FIXSTRING=`"${CURL}" -A "${USERAGENT}" "${CITYURL}"|sed 's/<[^>]*>//g;s/\t//g;/[:alnum:]/d;/^[0-9]\{5\}/d;7d'|tr '\r\n' ' '`
+#FIXSTRING=`cat rss|sed 's/<[^>]*>//g;s/\t//g;/[:alnum:]/d;/^[0-9]\{5\}/d;7d'|tr '\r\n' ' '`
+
+WEATHER=(`echo ${FIXSTRING}`)
+if [ 0 -eq ${#WEATHER[@]} ]; then
+	WS="Fail :-("
+else
+	case "${DAYS}" in
+		1)
+			COUNTS="2";;
+		2)
+			COUNTS="2 7";;
+		4)
+			COUNTS="2 7 12 17";;
+		5)
+			COUNTS="2 7 12 17 22";;
+		6)
+			COUNTS="2 7 12 17 22 27";;
+		7)
+			COUNTS="2 7 12 17 22 27 32";;
+		*)
+			COUNTS="2 7 12";;
+	esac
+	for i in ${COUNTS}
+	do
+		if [ -z "${WS}" ]; then
+			WS=${WEATHER[i]}","${WEATHER[i+1]}","${WEATHER[i+2]}
+		else
+			WS=${WS}"."${WEATHER[i]}","${WEATHER[i+1]}","${WEATHER[i+2]}
+		fi
+	done
+	WS=${WEATHER[0]}" "${WEATHER[1]}","${WS}
+fi
+
+echo ${WS}
+
+exit 0
