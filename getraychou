@@ -4,7 +4,7 @@
 #
 # usage: ./getweather [CITYID] [DAYS]
 #
-# updated by comet on 2011-07-28
+# updated by comet on 2012-08-20
 
 SHPATH="/root/shells"
 TASKLOG="${SHPATH}/task.log"
@@ -14,7 +14,7 @@ SHTIME=`date +%F\ \ %T`
 #curl --connect-timeout 5 -s -S
 #s: slient , S: Show error
 CURL=`which curl`
-USERAGENT='Mozilla/5.0 (X11; U; Linux x86_64; zh-CN; rv:1.9.2.6) Gecko/20110728 Ubuntu/10.04 (lucid) Firefox/5.0'
+USERAGENT='Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:14.0) Gecko/20100101 Firefox/14.0.1'
 DAYS=3
 
 #-n: length not null

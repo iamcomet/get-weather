@@ -1,0 +1,11 @@
+v1.1
+
+1.getraychou:删除每行末尾的^M，现只支持linux下运行。
+
+2012-08-20 23:11:44
+
+v1.0
+
+1.getryachou:获取weather.raychou.com的天气信息。
+
+2011-07-28
